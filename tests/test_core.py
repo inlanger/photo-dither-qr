@@ -81,7 +81,7 @@ def test_function_modules_and_data_centers_are_preserved() -> None:
 @pytest.mark.parametrize(
     ("payload", "source"),
     [
-        ("https://example.com/dithered-qr", gradient()),
+        ("https://example.com/photo-dither-qr", gradient()),
         ("Привет из QR", Image.new("L", (120, 180), 128)),
     ],
 )
@@ -128,7 +128,7 @@ def test_payload_grows_past_minimum_version() -> None:
         ("example-com-qr.png", "https://example.com"),
         (
             "repository-qr.png",
-            "https://github.com/inlanger/dithered-qr",
+            "https://github.com/inlanger/photo-dither-qr",
         ),
     ],
 )

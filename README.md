@@ -1,8 +1,8 @@
-# Dithered QR
+# Photo Dither QR
 
 Python-генератор QR-кодов, в которые фотография вплетается с помощью двухпроходного дизеринга с распространением ошибки. Идея и алгоритм вдохновлены [генератором Andrew Taylor](https://www.andrewt.net/dithered-qr-codes/wtf/).
 
-Репозиторий: [github.com/inlanger/dithered-qr](https://github.com/inlanger/dithered-qr)
+Репозиторий: [github.com/inlanger/photo-dither-qr](https://github.com/inlanger/photo-dither-qr)
 
 ## Установка
 
@@ -41,7 +41,7 @@ dithered-qr photo.jpg "https://example.com" -o qr.png \
 | Ссылка внутри QR | Исходное изображение | Готовый QR |
 | --- | --- | --- |
 | [https://example.com](https://example.com) | [![Горы и маяк](examples/demo-source.png)](examples/demo-source.png) | [![QR-код для example.com](examples/example-com-qr.png)](https://example.com) |
-| [Этот репозиторий](https://github.com/inlanger/dithered-qr) | [![Синтетический портрет](examples/portrait-source.png)](examples/portrait-source.png) | [![QR-код репозитория](examples/repository-qr.png)](https://github.com/inlanger/dithered-qr) |
+| [Этот репозиторий](https://github.com/inlanger/photo-dither-qr) | [![Синтетический портрет](examples/portrait-source.png)](examples/portrait-source.png) | [![QR-код репозитория](examples/repository-qr.png)](https://github.com/inlanger/photo-dither-qr) |
 
 Обе исходные картинки лежат в `examples/` и подходят для немедленного запуска:
 
@@ -50,7 +50,7 @@ dithered-qr examples/demo-source.png "https://example.com" \
   -o examples/example-com-qr.png
 
 dithered-qr examples/portrait-source.png \
-  "https://github.com/inlanger/dithered-qr" \
+  "https://github.com/inlanger/photo-dither-qr" \
   -o examples/repository-qr.png
 ```
 
