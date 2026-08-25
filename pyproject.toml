@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dithered-qr"
-version = "0.2.0"
-description = "Generate image-based and research-inspired experimental QR codes"
+version = "0.1.0"
+description = "Generate error-diffused QR codes that contain a monochrome image"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

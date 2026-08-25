@@ -1,21 +1,23 @@
 # Photo Dither QR
 
-Python-генератор художественных QR-кодов. Базовый режим вплетает фотографию в QR с помощью двухпроходного дизеринга с распространением ошибки; ещё три экспериментальных режима основаны на идеях из исследований ART-UP, Text2QR и Dueling QR Codes.
+Turn a photo or illustration into a scannable monochrome QR code.
 
-Изначальный алгоритм вдохновлён [генератором Andrew Taylor](https://www.andrewt.net/dithered-qr-codes/wtf/).
+The image is woven into the QR module grid with two-pass error-diffusion dithering. The result is a crisp binary PNG: recognizably a picture, but still readable as a QR code.
 
-Репозиторий: [github.com/inlanger/photo-dither-qr](https://github.com/inlanger/photo-dither-qr)
+Inspired by [Andrew Taylor's dithered QR code generator](https://www.andrewt.net/dithered-qr-codes/wtf/).
 
-## Режимы
+Repository: [github.com/inlanger/photo-dither-qr](https://github.com/inlanger/photo-dither-qr)
 
-| Режим | Команда | Что получается |
+## Examples
+
+| Encoded URL | Source image | Generated QR |
 | --- | --- | --- |
-| Dither | по умолчанию | Контрастный чёрно-белый QR с фотографией в сетке 3×3 |
-| ART-UP | `--method art-up` | Dither QR с оценкой вероятности сканирования и локальным ремонтом слабых модулей |
-| Text2QR blueprint | `--method blueprint` | Полутоновый CPU-only blueprint без diffusion-модели |
-| Dueling QR | `duel` | Один экспериментальный QR с двумя сообщениями, выбираемыми углом обзора |
+| [example.com](https://example.com) | [![Mountain and lighthouse illustration](examples/demo-source.png)](examples/demo-source.png) | [![QR code containing the mountain and lighthouse illustration](examples/example-com-qr.png)](https://example.com) |
+| [This repository](https://github.com/inlanger/photo-dither-qr) | [![Monochrome portrait](examples/portrait-source.png)](examples/portrait-source.png) | [![QR code containing the portrait](examples/repository-qr.png)](https://github.com/inlanger/photo-dither-qr) |
 
-## Установка
+Both source images are included in `examples/` so you can reproduce the results immediately.
+
+## Installation
 
 ```bash
 python3 -m venv .venv
@@ -23,104 +25,71 @@ source .venv/bin/activate
 python -m pip install -e .
 ```
 
-## Использование
-
-Обычный dither QR:
+## Usage
 
 ```bash
 dithered-qr photo.jpg "https://example.com" -o qr.png
 ```
 
-ART-UP-inspired ремонт и карта уверенности:
-
-```bash
-dithered-qr photo.jpg "https://example.com" -o art-up.png \
-  --method art-up \
-  --strength 0.65 \
-  --heatmap confidence.png
-```
-
-Чем выше `--strength`, тем выше модельная оценка уверенности модулей и тем меньше деталей фотографии. Это proxy, а не гарантия физического сканирования. Значение по умолчанию — `0.65`; в статье ART-UP исследуется диапазон `0.75–0.90`.
-
-Text2QR-inspired blueprint:
-
-```bash
-dithered-qr photo.jpg "https://example.com" -o blueprint.png \
-  --method blueprint \
-  --strength 0.6 \
-  --module-size 16
-```
-
-Для blueprint параметр `--strength` задаёт робастность: `0.5 <= strength < 1.0`.
-
-Dueling QR с двумя ссылками:
-
-```bash
-dithered-qr duel \
-  "https://example.com" \
-  "https://github.com/inlanger/photo-dither-qr" \
-  -o dual.png \
-  --split vertical
-```
-
-`vertical`, `horizontal` и `diagonal` меняют направление разделения. Прямой скан Dueling QR намеренно неоднозначен: он может не сработать или вернуть любую из ссылок. Результат зависит от камеры, угла, размера и печати. Не используйте этот режим для оплаты, авторизации и других чувствительных ссылок.
-
-То же самое без установленной команды:
+You can also run the package as a Python module:
 
 ```bash
 python -m dithered_qr photo.jpg "https://example.com" -o qr.png
 ```
 
-Все параметры доступны через `dithered-qr --help` и `dithered-qr duel --help`.
+Useful options:
 
-## Готовые примеры
+```bash
+dithered-qr photo.jpg "https://example.com" -o qr.png \
+  --contrast 1.2 \
+  --brightness 0.05 \
+  --mask 3 \
+  --min-version 6
+```
 
-| Режим и содержимое | Исходное изображение | Результат |
-| --- | --- | --- |
-| Dither · [example.com](https://example.com) | [![Горы и маяк](examples/demo-source.png)](examples/demo-source.png) | [![Dither QR для example.com](examples/example-com-qr.png)](https://example.com) |
-| Dither · [этот репозиторий](https://github.com/inlanger/photo-dither-qr) | [![Синтетический портрет](examples/portrait-source.png)](examples/portrait-source.png) | [![Dither QR репозитория](examples/repository-qr.png)](https://github.com/inlanger/photo-dither-qr) |
-| ART-UP · [этот репозиторий](https://github.com/inlanger/photo-dither-qr) | [![Синтетический портрет](examples/portrait-source.png)](examples/portrait-source.png) | [![ART-UP QR репозитория](examples/art-up-qr.png)](https://github.com/inlanger/photo-dither-qr)<br>[Карта уверенности](examples/art-up-heatmap.png) |
-| Text2QR blueprint · [example.com](https://example.com) | [![Горы и маяк](examples/demo-source.png)](examples/demo-source.png) | [![Text2QR blueprint для example.com](examples/blueprint-qr.png)](https://example.com) |
-| Dueling · [example.com](https://example.com) + [репозиторий](https://github.com/inlanger/photo-dither-qr) | — | [![Dueling QR с двумя ссылками](examples/dueling-qr.png)](examples/dueling-qr.png) |
+Run `dithered-qr --help` for every option.
 
-Обе исходные картинки лежат в `examples/` и подходят для немедленного запуска. `demo-source.png` — контрастная иллюстрация, а `portrait-source.png` — AI-сгенерированный фотореалистичный портрет.
+Reproduce the included examples:
+
+```bash
+dithered-qr examples/demo-source.png "https://example.com" \
+  -o examples/example-com-qr.png
+
+dithered-qr examples/portrait-source.png \
+  "https://github.com/inlanger/photo-dither-qr" \
+  -o examples/repository-qr.png
+```
 
 ## Python API
 
 ```python
 from PIL import Image
-from dithered_qr import generate_art_up_qr
+from dithered_qr import generate_dithered_qr
 
 with Image.open("photo.jpg") as source:
-    result = generate_art_up_qr("https://example.com", source)
+    result = generate_dithered_qr("https://example.com", source)
 
 result.save("qr.png")
 ```
 
-Публичный API также экспортирует `generate_dithered_qr`, `generate_blueprint_qr` и `generate_dueling_qr`.
+## How it works
 
-## Что именно взято из исследований
+1. Each QR module is divided into a 3×3 subpixel grid.
+2. The center subpixel keeps the required QR bit.
+3. The brightness error introduced by that fixed center is distributed across the eight free subpixels.
+4. Floyd–Steinberg dithering turns the free subpixels into black and white image detail.
+5. Finder, timing, alignment, and other function modules remain intact.
+6. A standard four-module white quiet zone is added around the result.
 
-- [ART-UP: A Novel Method for Generating Scanning-robust Aesthetic QR codes](https://arxiv.org/abs/1803.02280) — реализована clean-room модель уверенности модуля: гауссово распределение точки выборки, локальный порог бинаризации и итеративное исправление свободных субпикселей. Модель служит proxy, не ISO-верификатором. Это не полное воспроизведение многоступенчатого binary/grayscale/color pipeline статьи.
-- [Text2QR: Harmonizing Aesthetic Customization and Scanning Robustness for Text-Guided QR Code Generation](https://arxiv.org/abs/2403.06452) — реализованы CPU-only этапы histogram polarization и adaptive centered-square halftoning из QR Aesthetic Blueprint. Неописанная в статье функция реорганизации модулей заменена безопасным выбором среди восьми стандартных QR-масок. Stable Diffusion и SELR здесь нет.
-- [Dueling QR Codes: The Hyding of Dr. Jeckyl](https://arxiv.org/abs/2503.13458) — два QR используют одну версию, уровень коррекции и маску; пополам делятся только data-модули, а служебные паттерны сохраняются целиком. Тесты подтверждают обе цифровые проекции, но не гарантируют результат физической съёмки.
+The binary grid is enlarged only by an integer scale factor with nearest-neighbor sampling, which keeps every edge sharp.
 
-## Как работает базовый dither
-
-1. QR-модуль делится на сетку 3×3. В центре остаётся обязательный бит QR, остальные восемь пикселей доступны изображению.
-2. Ошибка яркости от обязательного центрального бита распределяется между его восемью соседями.
-3. Свободные пиксели переводятся в чёрно-белые алгоритмом Floyd–Steinberg.
-4. Finder-, timing-, alignment- и остальные служебные модули сохраняются полностью, а вокруг результата добавляется стандартная светлая рамка шириной 4 QR-модуля.
-
-Готовая бинарная сетка увеличивается только целым множителем и без сглаживания. Это сохраняет резкие границы модулей.
-
-## Проверка
+## Verification
 
 ```bash
 python -m pip install -e '.[test]'
 pytest
 ```
 
-Тесты проверяют геометрию, неизменность служебных модулей, математические инварианты новых методов и декодируют результаты независимым движком ZXing-C++.
+The test suite verifies geometry and protected QR regions, then decodes generated PNG files with the independent ZXing-C++ engine.
 
-Художественный QR всегда менее устойчив, чем обычный. Перед печатью проверьте его несколькими телефонами, на нужном размере, расстоянии и при плохом освещении.
+Decorative QR codes are less robust than plain QR codes. Before printing or publishing one, test the final PNG with several phones at the intended size, distance, lighting, and print material.
