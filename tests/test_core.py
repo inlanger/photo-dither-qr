@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 import segno
 import zxingcpp
@@ -11,6 +13,7 @@ from dithered_qr.core import QUIET_ZONE_MODULES, _encode_payload, _module_types
 
 
 DATA_TYPES = {consts.TYPE_DATA_LIGHT, consts.TYPE_DATA_DARK}
+PROJECT_ROOT = Path(__file__).parents[1]
 
 
 def gradient(width: int = 180, height: int = 120) -> Image.Image:
@@ -117,3 +120,27 @@ def test_payload_grows_past_minimum_version() -> None:
     qr = _encode_payload(payload, 1, "H", None)
     assert isinstance(qr.version, int)
     assert qr.version > 1
+
+
+@pytest.mark.parametrize(
+    ("filename", "payload"),
+    [
+        ("example-com-qr.png", "https://example.com"),
+        (
+            "repository-qr.png",
+            "https://github.com/inlanger/dithered-qr",
+        ),
+    ],
+)
+def test_committed_examples_decode(filename: str, payload: str) -> None:
+    with Image.open(PROJECT_ROOT / "examples" / filename) as image:
+        decoded = zxingcpp.read_barcode(
+            image,
+            formats=zxingcpp.BarcodeFormat.QRCode,
+            try_invert=False,
+            is_pure=False,
+        )
+
+    assert decoded is not None
+    assert decoded.valid
+    assert decoded.text == payload
