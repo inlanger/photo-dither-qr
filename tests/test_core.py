@@ -130,6 +130,11 @@ def test_payload_grows_past_minimum_version() -> None:
             "repository-qr.png",
             "https://github.com/inlanger/photo-dither-qr",
         ),
+        (
+            "art-up-qr.png",
+            "https://github.com/inlanger/photo-dither-qr",
+        ),
+        ("blueprint-qr.png", "https://example.com"),
     ],
 )
 def test_committed_examples_decode(filename: str, payload: str) -> None:
